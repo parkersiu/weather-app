@@ -18,7 +18,7 @@ const location = await geoCode();
 
 async function getWeather() {
   const res = await fetch(
-    `https://api.openweathermap.org/data/3.0/onecall?lat=${location[0].lat}&lon=${location[0].lon}&exclude=minutely,hourly,daily,alerts&units=imperial&appid=${process.env.API_KEY}`,
+    `https://api.openweathermap.org/data/3.0/onecall?lat=${location[0].lat}&lon=${location[0].lon}&exclude=minutely,hourly,alerts&units=imperial&appid=${process.env.API_KEY}`,
     {
       method: "GET",
     }
@@ -30,9 +30,24 @@ async function getWeather() {
   return data;
 }
 
+function unixToDay(unix: number) {
+  const daysOfWeek: string[] = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const unixInMilliseconds: number = unix * 1000;
+  const date = new Date(unixInMilliseconds);
+  const dayIndex = date.getDay();
+  return daysOfWeek[dayIndex];
+}
+
 export default async function Home() {
   const weather = await getWeather();
-  console.log(weather);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="container">
@@ -72,23 +87,35 @@ export default async function Home() {
           <ul className="days-list">
             <li>
               <i className="bx bx-cloud"></i>
-              <span>Sat</span>
-              <span className="day-temp">23°C</span>
+              <span>{unixToDay(weather.daily[1].dt)}</span>
+              <span className="day-temp">
+                {Math.round(weather.daily[1].temp.min)} -{" "}
+                {Math.round(weather.daily[1].temp.max)}°F
+              </span>
             </li>
             <li>
               <i className="bx bx-sun"></i>
-              <span>Sun</span>
-              <span className="day-temp">28°C</span>
+              <span>{unixToDay(weather.daily[2].dt)}</span>
+              <span className="day-temp">
+                {Math.round(weather.daily[2].temp.min)} -{" "}
+                {Math.round(weather.daily[2].temp.max)}°F
+              </span>
             </li>
             <li>
               <i className="bx bx-cloud-rain"></i>
-              <span>Mon</span>
-              <span className="day-temp">02°C</span>
+              <span>{unixToDay(weather.daily[3].dt)}</span>
+              <span className="day-temp">
+                {Math.round(weather.daily[3].temp.min)} -{" "}
+                {Math.round(weather.daily[3].temp.max)}°F
+              </span>
             </li>
             <li>
               <i className="bx bx-cloud-drizzle"></i>
-              <span>Tue</span>
-              <span className="day-temp">14°C</span>
+              <span>{unixToDay(weather.daily[4].dt)}</span>
+              <span className="day-temp">
+                {Math.round(weather.daily[4].temp.min)} -{" "}
+                {Math.round(weather.daily[4].temp.max)}°F
+              </span>
             </li>
           </ul>
 
