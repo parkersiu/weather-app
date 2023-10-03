@@ -1,34 +1,7 @@
-async function geoCode() {
-  const city: string = "carlsbad";
-  const state: string = "ca";
-  const country: string = "us";
-  const res = await fetch(
-    `http://api.openweathermap.org/geo/1.0/direct?q=${city},${state},${country}&appid=${process.env.API_KEY}`,
-    {
-      method: "GET",
-    }
-  );
-  if (!res.ok) {
-    throw new Error("Failed to fetch geo data");
-  }
-  const data = await res.json();
-  return data;
-}
-const location = await geoCode();
+import geoCode from "@/lib/geoCode";
+import getWeather from "@/lib/getWeather";
 
-async function getWeather() {
-  const res = await fetch(
-    `https://api.openweathermap.org/data/3.0/onecall?lat=${location[0].lat}&lon=${location[0].lon}&exclude=minutely,hourly,alerts&units=imperial&appid=${process.env.API_KEY}`,
-    {
-      method: "GET",
-    }
-  );
-  if (!res.ok) {
-    throw new Error("Failed to fetch weather data");
-  }
-  const data = await res.json();
-  return data;
-}
+const location = await geoCode();
 
 function unixToDay(unix: number) {
   const daysOfWeek: string[] = [
@@ -47,7 +20,7 @@ function unixToDay(unix: number) {
 }
 
 export default async function Home() {
-  const weather = await getWeather();
+  const weather = await getWeather(location);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="container">
